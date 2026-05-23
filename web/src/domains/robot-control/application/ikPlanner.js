@@ -1,7 +1,12 @@
-import * as THREE from 'three';
-import { unwrapValueFrom, unwrapPoseFrom } from './poseMath.js';
+// CCD-based inverse kinematics for URDF arms.
+//
+// Lives in `application/` because it operates on THREE.Matrix4 / URDF
+// joint structures — both infrastructure types. Pure pose math (no
+// THREE) is in `domain/poseMath.js`; this module composes that math
+// against the URDF representation.
 
-export { unwrapPoseFrom };
+import * as THREE from 'three';
+import { unwrapValueFrom } from '../domain/poseMath.js';
 
 // CCD solver run "in place" against a robot's URDF chain. Returns the
 // resulting joint angles WITHOUT leaving the robot disturbed.
