@@ -1,4 +1,7 @@
 import * as THREE from 'three';
+import { unwrapValueFrom, unwrapPoseFrom } from './poseMath.js';
+
+export { unwrapPoseFrom };
 
 // CCD solver run "in place" against a robot's URDF chain. Returns the
 // resulting joint angles WITHOUT leaving the robot disturbed.
@@ -83,24 +86,10 @@ export function planChain(robot, worldTargets, opts = {}) {
     const result = planIKToTarget(robot, target, { startPose: previous, lockJoints, iterations, damping });
     if (!result) return null;
     for (const name of Object.keys(result)) {
-      const previousValue = previous[name] ?? 0;
-      while (result[name] - previousValue > Math.PI) result[name] -= 2 * Math.PI;
-      while (result[name] - previousValue < -Math.PI) result[name] += 2 * Math.PI;
+      result[name] = unwrapValueFrom(result[name], previous[name] ?? 0);
     }
     results.push(result);
     previous = result;
   }
   return results;
-}
-
-export function unwrapPoseFrom(target, fromPose) {
-  const result = {};
-  for (const [name, value] of Object.entries(target)) {
-    let unwrapped = value;
-    const previousValue = fromPose[name] ?? 0;
-    while (unwrapped - previousValue > Math.PI) unwrapped -= 2 * Math.PI;
-    while (unwrapped - previousValue < -Math.PI) unwrapped += 2 * Math.PI;
-    result[name] = unwrapped;
-  }
-  return result;
 }

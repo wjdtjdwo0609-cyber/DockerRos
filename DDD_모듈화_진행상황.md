@@ -28,10 +28,6 @@ web/
     app/
       installBrowserErrorReporter.js
 
-    shared/
-      events/
-        EventBus.js
-
     domains/
       robot-control/
         application/
