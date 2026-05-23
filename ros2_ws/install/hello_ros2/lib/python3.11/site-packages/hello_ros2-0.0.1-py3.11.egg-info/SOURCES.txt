@@ -1,0 +1,14 @@
+package.xml
+setup.cfg
+setup.py
+../../build/hello_ros2/hello_ros2.egg-info/PKG-INFO
+../../build/hello_ros2/hello_ros2.egg-info/SOURCES.txt
+../../build/hello_ros2/hello_ros2.egg-info/dependency_links.txt
+../../build/hello_ros2/hello_ros2.egg-info/entry_points.txt
+../../build/hello_ros2/hello_ros2.egg-info/requires.txt
+../../build/hello_ros2/hello_ros2.egg-info/top_level.txt
+../../build/hello_ros2/hello_ros2.egg-info/zip-safe
+hello_ros2/__init__.py
+hello_ros2/listener.py
+hello_ros2/talker.py
+resource/hello_ros2

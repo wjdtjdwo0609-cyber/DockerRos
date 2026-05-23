@@ -1,0 +1,19 @@
+# OS
+.DS_Store
+__pycache__/
+*.pyc
+
+# Build / generated
+web/_dist/
+web/opcua_venv/
+web/__pycache__/
+
+# Backups
+*.bak_*
+
+# IDE
+.vscode/*.log
+
+# Local env
+.env
+*.local

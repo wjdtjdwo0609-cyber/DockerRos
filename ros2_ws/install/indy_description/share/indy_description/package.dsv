@@ -1,0 +1,8 @@
+source;share/indy_description/hook/cmake_prefix_path.ps1
+source;share/indy_description/hook/cmake_prefix_path.dsv
+source;share/indy_description/hook/cmake_prefix_path.sh
+source;share/indy_description/local_setup.bash
+source;share/indy_description/local_setup.dsv
+source;share/indy_description/local_setup.ps1
+source;share/indy_description/local_setup.sh
+source;share/indy_description/local_setup.zsh

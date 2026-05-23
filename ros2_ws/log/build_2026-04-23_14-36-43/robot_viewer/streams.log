@@ -1,0 +1,23 @@
+[0.010s] Invoking command in '/Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/robot_viewer': CONDA_PROMPT_MODIFIER=(ros2_humble) SHLVL=2 _=/usr/bin/env /opt/homebrew/bin/cmake --build /Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/robot_viewer -- -j16 -l16
+[0.029s] Invoked command in '/Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/robot_viewer' returned '0': CONDA_PROMPT_MODIFIER=(ros2_humble) SHLVL=2 _=/usr/bin/env /opt/homebrew/bin/cmake --build /Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/robot_viewer -- -j16 -l16
+[0.037s] Invoking command in '/Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/robot_viewer': CONDA_PROMPT_MODIFIER=(ros2_humble) SHLVL=2 _=/usr/bin/env /opt/homebrew/bin/cmake --install /Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/robot_viewer
+[0.041s] -- Install configuration: ""
+[0.041s] -- Up-to-date: /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/robot_viewer/share/robot_viewer/launch
+[0.041s] -- Installing: /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/robot_viewer/share/robot_viewer/launch/default.rviz
+[0.041s] -- Installing: /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/robot_viewer/share/robot_viewer/launch/view.launch.py
+[0.041s] -- Up-to-date: /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/robot_viewer/share/ament_index/resource_index/package_run_dependencies/robot_viewer
+[0.041s] -- Up-to-date: /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/robot_viewer/share/ament_index/resource_index/parent_prefix_path/robot_viewer
+[0.041s] -- Up-to-date: /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/robot_viewer/share/robot_viewer/environment/ament_prefix_path.sh
+[0.041s] -- Up-to-date: /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/robot_viewer/share/robot_viewer/environment/ament_prefix_path.dsv
+[0.042s] -- Up-to-date: /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/robot_viewer/share/robot_viewer/environment/path.sh
+[0.042s] -- Up-to-date: /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/robot_viewer/share/robot_viewer/environment/path.dsv
+[0.042s] -- Up-to-date: /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/robot_viewer/share/robot_viewer/local_setup.bash
+[0.042s] -- Up-to-date: /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/robot_viewer/share/robot_viewer/local_setup.sh
+[0.042s] -- Up-to-date: /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/robot_viewer/share/robot_viewer/local_setup.zsh
+[0.042s] -- Up-to-date: /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/robot_viewer/share/robot_viewer/local_setup.dsv
+[0.042s] -- Installing: /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/robot_viewer/share/robot_viewer/package.dsv
+[0.042s] -- Up-to-date: /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/robot_viewer/share/ament_index/resource_index/packages/robot_viewer
+[0.042s] -- Up-to-date: /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/robot_viewer/share/robot_viewer/cmake/robot_viewerConfig.cmake
+[0.042s] -- Up-to-date: /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/robot_viewer/share/robot_viewer/cmake/robot_viewerConfig-version.cmake
+[0.042s] -- Up-to-date: /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/robot_viewer/share/robot_viewer/package.xml
+[0.043s] Invoked command in '/Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/robot_viewer' returned '0': CONDA_PROMPT_MODIFIER=(ros2_humble) SHLVL=2 _=/usr/bin/env /opt/homebrew/bin/cmake --install /Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/robot_viewer

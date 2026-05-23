@@ -1,0 +1,35 @@
+running egg_info
+creating ../../build/hello_ros2/hello_ros2.egg-info
+writing ../../build/hello_ros2/hello_ros2.egg-info/PKG-INFO
+writing dependency_links to ../../build/hello_ros2/hello_ros2.egg-info/dependency_links.txt
+writing entry points to ../../build/hello_ros2/hello_ros2.egg-info/entry_points.txt
+writing requirements to ../../build/hello_ros2/hello_ros2.egg-info/requires.txt
+writing top-level names to ../../build/hello_ros2/hello_ros2.egg-info/top_level.txt
+writing manifest file '../../build/hello_ros2/hello_ros2.egg-info/SOURCES.txt'
+reading manifest file '../../build/hello_ros2/hello_ros2.egg-info/SOURCES.txt'
+writing manifest file '../../build/hello_ros2/hello_ros2.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/hello_ros2/build/lib/hello_ros2
+copying hello_ros2/talker.py -> /Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/hello_ros2/build/lib/hello_ros2
+copying hello_ros2/__init__.py -> /Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/hello_ros2/build/lib/hello_ros2
+copying hello_ros2/listener.py -> /Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/hello_ros2/build/lib/hello_ros2
+running install
+running install_lib
+creating /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/hello_ros2/lib/python3.11/site-packages/hello_ros2
+copying /Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/hello_ros2/build/lib/hello_ros2/talker.py -> /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/hello_ros2/lib/python3.11/site-packages/hello_ros2
+copying /Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/hello_ros2/build/lib/hello_ros2/__init__.py -> /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/hello_ros2/lib/python3.11/site-packages/hello_ros2
+copying /Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/hello_ros2/build/lib/hello_ros2/listener.py -> /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/hello_ros2/lib/python3.11/site-packages/hello_ros2
+byte-compiling /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/hello_ros2/lib/python3.11/site-packages/hello_ros2/talker.py to talker.cpython-311.pyc
+byte-compiling /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/hello_ros2/lib/python3.11/site-packages/hello_ros2/__init__.py to __init__.cpython-311.pyc
+byte-compiling /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/hello_ros2/lib/python3.11/site-packages/hello_ros2/listener.py to listener.cpython-311.pyc
+running install_data
+creating /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/hello_ros2/share/ament_index/resource_index/packages
+copying resource/hello_ros2 -> /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/hello_ros2/share/ament_index/resource_index/packages
+copying package.xml -> /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/hello_ros2/share/hello_ros2
+running install_egg_info
+Copying ../../build/hello_ros2/hello_ros2.egg-info to /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/hello_ros2/lib/python3.11/site-packages/hello_ros2-0.0.1-py3.11.egg-info
+running install_scripts
+Installing listener script to /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/hello_ros2/lib/hello_ros2
+Installing talker script to /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/hello_ros2/lib/hello_ros2
+writing list of installed files to '/Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/hello_ros2/install.log'

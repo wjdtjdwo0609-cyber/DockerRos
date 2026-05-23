@@ -1,0 +1,30 @@
+services:
+  ros2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        USER_UID: "1000"
+        USER_GID: "1000"
+    image: dockeros:humble
+    container_name: ros2_humble
+    hostname: ros2
+    platform: linux/arm64
+    stdin_open: true
+    tty: true
+    network_mode: host
+    ipc: host
+    privileged: true
+    environment:
+      - DISPLAY=host.docker.internal:0
+      - QT_X11_NO_MITSHM=1
+      - XAUTHORITY=/tmp/.docker.xauth
+      - ROS_DOMAIN_ID=0
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+    volumes:
+      - ./ros2_ws:/home/ros/ros2_ws
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ${DOCKEROS_XAUTH:-/tmp/.docker.xauth}:/tmp/.docker.xauth:ro
+      - ~/.ssh:/home/ros/.ssh:ro
+    working_dir: /home/ros/ros2_ws
+    command: /bin/bash

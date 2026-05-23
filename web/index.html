@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Robot Web Viewer</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <script>
+    // Embed mode: ?embed=1 → 3D 캔버스만 보이게 시뮬 자체 UI 숨김 (디지털 트윈 중앙 박스용)
+    (function () {
+      var p = new URLSearchParams(location.search);
+      if (p.get('embed') === '1') document.documentElement.classList.add('embed-mode');
+    })();
+  </script>
+  <div id="viewport"></div>
+
+  <!-- 디지털 트윈 플로팅 테스트 버튼 — embed 모드(툴바/패널 숨김)에서도 보임.
+       클릭: 시나리오 로드 → 주문 무한 반복 / 다시 클릭: 정지 -->
+  <button id="twin-test-btn" title="시나리오를 로드하고 주문을 무한 반복 실행 — 다시 누르면 정지">🏭 시나리오 테스트</button>
+
+  <div id="sim-toolbar">
+    <span class="toolbar-label">추가</span>
+    <button data-sim-add="ConveyorBelt">컨베이어</button>
+    <button data-sim-add="VerticalConveyor">엘리베이터</button>
+    <button data-sim-add="Cylinder">실린더</button>
+    <span class="toolbar-sep"></span>
+    <button data-sim-add="Table">테이블</button>
+    <button data-sim-add="StorageBox">보관함</button>
+    <span class="toolbar-sep"></span>
+    <button data-sim-add="Socket8">8핀</button>
+    <button data-sim-add="Socket12">12핀</button>
+    <span class="toolbar-sep"></span>
+    <button data-sim-add="Sensor">센서</button>
+    <button data-sim-add="VisionCamera">비전</button>
+    <button data-sim-add="WeightScale">저울</button>
+    <span class="toolbar-sep"></span>
+    <button id="btn-load-scenario" class="scenario-btn" title="3-로봇 소켓 분류 라인 자동 배치">🏭 시나리오 로드</button>
+    <button id="btn-toggle-orders" class="order-toolbar-btn">📋 주문 패널</button>
+    <button id="btn-auto-demo" class="auto-demo-btn" title="랜덤 주문을 자동으로 계속 흘려서 라인 데모">🎲 자동 테스트</button>
+    <button id="btn-toggle-axes" title="선택/활성 객체의 좌표축 화살표(gizmo) ON/OFF">🧭 축 표시</button>
+    <button id="btn-run-all" class="run-btn">▶ 전체 실행</button>
+    <span class="toolbar-sep"></span>
+    <button id="btn-open-twin" class="twin-btn" title="디지털 트윈 대시보드를 새 창으로 열기 (시뮬 + 데이터 한 화면)">🖥 디지털 트윈</button>
+  </div>
+
+  <aside id="order-panel" class="hidden">
+    <header>
+      <span>📋 주문 (대기 <span data-order-active-count>0</span>)</span>
+      <button data-order-close aria-label="닫기">×</button>
+    </header>
+    <div class="order-input-row">
+      <label>8핀 <input type="number" data-order-8 min="0" max="99" value="0" /></label>
+      <label>12핀 <input type="number" data-order-12 min="0" max="99" value="0" /></label>
+    </div>
+    <button data-order-submit class="order-submit-btn">+ 주문 넣기</button>
+    <h3>대기 중</h3>
+    <div data-order-active-list class="order-list"></div>
+    <h3>완료 (최근 10)</h3>
+    <div data-order-completed-list class="order-list"></div>
+  </aside>
+
+  <aside id="inspector" class="hidden">
+    <header>
+      <span data-insp-title>—</span>
+      <button data-insp-close aria-label="닫기" title="닫기">×</button>
+    </header>
+    <div data-insp-body></div>
+    <footer>
+      <button data-insp-delete>삭제</button>
+    </footer>
+  </aside>
+
+  <aside id="panel">
+    <h1>🤖 Robot Viewer</h1>
+
+    <label class="row">
+      <span>추가할 로봇 타입</span>
+      <select id="robot-select">
+        <option value="indy7">Indy7 (Neuromeka, 6DOF)</option>
+        <option value="indy12">Indy12 (Neuromeka, 6DOF)</option>
+        <option value="ur5e">UR5e (Universal Robots, 6DOF)</option>
+        <option value="ur10e">UR10e (Universal Robots, 6DOF)</option>
+        <option value="panda">Panda (Franka Emika, 7DOF)</option>
+        <option value="fanuc">Fanuc M-10iA (6DOF)</option>
+      </select>
+    </label>
+
+    <div class="row buttons">
+      <button id="btn-add-robot">+ 로봇 추가</button>
+      <button id="btn-remove-robot" title="현재 활성 로봇 제거">− 제거</button>
+    </div>
+
+    <h2 id="robot-list-header">씬 로봇 목록</h2>
+    <div id="robot-list"></div>
+
+    <div class="row buttons">
+      <button id="btn-home-pose" title="작업 준비 자세 (-π/2 C-shape)">🏠 Home 자세</button>
+      <button id="btn-reset" title="모든 관절 0° (URDF 영점, 팔 쭉 뻗음)">⊙ 영점 자세</button>
+    </div>
+
+    <h2>카메라</h2>
+    <div class="row buttons view-presets">
+      <button data-view="iso">ISO</button>
+      <button data-view="top">Top</button>
+      <button data-view="front">Front</button>
+      <button data-view="side">Side</button>
+    </div>
+    <div class="row buttons">
+      <button id="btn-focus" title="선택한 오브젝트로 초점 이동 (F 또는 더블클릭)">⊙ 초점 이동 (F)</button>
+    </div>
+
+    <h2>Mode</h2>
+    <div class="row buttons">
+      <button id="btn-mode-manual" class="mode active">수동 (슬라이더)</button>
+      <button id="btn-mode-ik">IK (드래그)</button>
+    </div>
+
+    <h2>툴 (End-effector)</h2>
+    <label class="row">
+      <span>도구 선택</span>
+      <select id="tool-select">
+        <option value="none">없음</option>
+        <option value="gripper">그리퍼</option>
+        <option value="pen">펜 (그리기)</option>
+      </select>
+    </label>
+    <label id="gripper-open-row" class="row hidden">
+      <div class="joint-label">
+        <span class="joint-name">opening</span>
+        <span class="joint-value" id="gripper-open-val">0.04</span>
+      </div>
+      <input type="range" id="gripper-open" min="0" max="0.08" step="0.001" value="0.04" />
+    </label>
+
+    <h2>경로 트레일</h2>
+    <div class="row buttons">
+      <button id="btn-trail-toggle">📍 트레일 OFF</button>
+      <button id="btn-trail-clear">🗑️ 지우기</button>
+    </div>
+
+    <h2>테스트 시퀀스</h2>
+    <div class="row buttons">
+      <button id="btn-welding-test" title="과제 답안 시퀀스 (home → 3× p1-p2-p_mid-p3-p4 → home)">🧪 용접 테스트 실행</button>
+    </div>
+
+    <h2>🧪 디지털 트윈 테스트</h2>
+    <label class="row">
+      <div class="joint-label">
+        <span class="joint-name">베이스 회전 (yaw°)</span>
+        <span class="joint-value" id="test-yaw-val">0</span>
+      </div>
+      <input type="range" id="test-yaw" min="-180" max="180" step="1" value="0" />
+    </label>
+    <label class="row">
+      <span>위치 X (m)</span>
+      <input type="number" id="test-px" step="0.05" value="0" />
+    </label>
+    <label class="row">
+      <span>위치 Y (m)</span>
+      <input type="number" id="test-py" step="0.05" value="0" />
+    </label>
+    <label class="row">
+      <span>위치 Z (m)</span>
+      <input type="number" id="test-pz" step="0.05" value="0" />
+    </label>
+    <div class="row buttons">
+      <button id="btn-test-spin" class="run-btn" title="활성 로봇을 메인축(yaw) 기준 360° 한 바퀴 돌려 테스트">🧪 테스트 회전</button>
+      <button id="btn-test-sync" title="활성 로봇의 현재 배치값을 입력칸에 다시 동기화">↺ 동기화</button>
+    </div>
+
+    <h2>ROS2 실시간</h2>
+    <div class="row buttons">
+      <button id="btn-ros-connect">연결</button>
+      <button id="btn-ros-disconnect" disabled>끊기</button>
+    </div>
+    <div id="ros-status" class="small muted">미연결 — rosbridge 실행 필요 (`./scripts/run-rosbridge.sh`)</div>
+
+    <h2>OPC UA (PLC 연동)</h2>
+    <div id="opcua-status" class="small muted">미연결 — `OPC UA 어댑터.command` 실행 필요</div>
+
+    <h2 id="joints-header">관절</h2>
+    <div id="joints"></div>
+
+    <div id="status">로딩 중…</div>
+  </aside>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three":                 "https://esm.sh/three@0.162.0",
+        "three/addons/":         "https://esm.sh/three@0.162.0/examples/jsm/",
+        "three/examples/jsm/":   "https://esm.sh/three@0.162.0/examples/jsm/",
+        "urdf-loader":           "https://esm.sh/urdf-loader@0.12.6?bundle&external=three",
+        "roslib":                "https://esm.sh/roslib@1.4.1?bundle"
+      }
+    }
+  </script>
+  <script>
+    // "디지털 트윈" 버튼 → 대시보드 /twin 프레젠테이션 화면을 새 창으로.
+    // 대시보드 주소는 localStorage('twinUrl') 로 변경 가능 (기본 localhost:8080).
+    (function () {
+      var btn = document.getElementById('btn-open-twin');
+      if (!btn) return;
+      btn.addEventListener('click', function () {
+        var url = localStorage.getItem('twinUrl') || 'http://localhost:8080/twin';
+        window.open(url, 'digitaltwin');
+      });
+      btn.addEventListener('contextmenu', function (e) {
+        e.preventDefault();
+        var cur = localStorage.getItem('twinUrl') || 'http://localhost:8080/twin';
+        var next = prompt('디지털 트윈 대시보드 URL', cur);
+        if (next) localStorage.setItem('twinUrl', next.trim());
+      });
+    })();
+  </script>
+  <script>
+    // Embed 모드(디지털 트윈 중앙 박스)면 시나리오를 자동 로드.
+    // ?embed=1 이면 기본 ON, ?scenario=0 으로만 끔.
+    (function () {
+      var p = new URLSearchParams(location.search);
+      if (p.get('embed') !== '1') return;
+      if (p.get('scenario') === '0') return;
+      // embed 모드에서는 좌표축(gizmo) 숨김. 버튼 텍스트로 현재 상태 판별
+      // ('🧭 축 표시' = 축 켜짐 → 누르면 꺼짐). 시나리오 로봇들이 늦게 로드되며
+      // gizmo 가 다시 보일 수 있어 몇 번 재확인.
+      function hideAxes() {
+        var ax = document.getElementById('btn-toggle-axes');
+        if (ax && ax.textContent.indexOf('축 표시') !== -1) ax.click();
+      }
+      // ?order8=N / ?order12=N → 시나리오 로드 후 자동으로 주문 1건 투입.
+      function autoOrder() {
+        var n8 = parseInt(p.get('order8') || '0', 10) || 0;
+        var n12 = parseInt(p.get('order12') || '0', 10) || 0;
+        if (n8 <= 0 && n12 <= 0) return;
+        var i8 = document.querySelector('[data-order-8]');
+        var i12 = document.querySelector('[data-order-12]');
+        var sub = document.querySelector('[data-order-submit]');
+        if (!sub) return;
+        if (i8) i8.value = String(n8);
+        if (i12) i12.value = String(n12);
+        sub.click();   // OrderPanel → orders-changed → 3로봇 라인 데모 자동 실행
+      }
+      // 실제 로봇 라인 미러: rosbridge(/joint_states) 자동 구독.
+      // embed 모드에서는 ROS 연결 UI가 숨겨져 수동 클릭이 불가하므로
+      // 시나리오 로봇 URDF 가 깔린 뒤 ROS 연결 버튼을 자동으로 누른다.
+      function connectRos() {
+        var rc = document.getElementById('btn-ros-connect');
+        if (rc && !rc.disabled) rc.click();
+      }
+      function tryLoad(attempt) {
+        var btn = document.getElementById('btn-load-scenario');
+        if (btn) {
+          // app.js 모듈이 리스너를 붙이고 Three.js 씬이 초기화될 시간을 줌.
+          setTimeout(function () {
+            btn.click();
+            // 시나리오 로봇 URDF 로딩이 끝나갈 즈음 + 여유 재확인.
+            setTimeout(hideAxes, 1800);
+            setTimeout(hideAxes, 4000);
+            setTimeout(hideAxes, 7000);
+            // 시나리오가 다 깔린 뒤 주문 투입.
+            setTimeout(autoOrder, 4500);
+            // 로봇 URDF 가 다 깔린 뒤 rosbridge 실시간 미러 연결.
+            setTimeout(connectRos, 5000);
+            setTimeout(connectRos, 9000);
+          }, 1500);
+          return;
+        }
+        if (attempt < 40) setTimeout(function () { tryLoad(attempt + 1); }, 150);
+      }
+      window.addEventListener('load', function () { tryLoad(0); });
+    })();
+  </script>
+  <script type="module" src="app.js?v=47"></script>
+  <!-- Intel5 본 프로젝트 픽킹 이벤트 구독 (별도 파일 — 기존 코드 영향 없음) -->
+  <script type="module" src="socket_picking_bridge.js?v=1"></script>
+</body>
+</html>

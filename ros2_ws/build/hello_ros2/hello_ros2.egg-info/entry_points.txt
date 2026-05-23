@@ -1,0 +1,3 @@
+[console_scripts]
+listener = hello_ros2.listener:main
+talker = hello_ros2.talker:main

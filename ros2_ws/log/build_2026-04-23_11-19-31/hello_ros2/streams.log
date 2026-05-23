@@ -1,0 +1,39 @@
+[0.280s] Invoking command in '/Users/tjdwo0609/Documents/DockerRos/ros2_ws/src/hello_ros2': CONDA_PROMPT_MODIFIER=(ros2_humble) PYTHONPATH=/Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/hello_ros2/prefix_override:/opt/homebrew/Caskroom/miniforge/base/envs/ros2_humble/lib/python3.11/site-packages/colcon_core/task/python/colcon_distutils_commands:/Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/hello_ros2/lib/python3.11/site-packages:${PYTHONPATH} SHLVL=2 _=/usr/bin/env /opt/homebrew/Caskroom/miniforge/base/envs/ros2_humble/bin/python3.11 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/hello_ros2 build --build-base /Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/hello_ros2/build install --record /Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/hello_ros2/install.log --single-version-externally-managed install_data
+[0.352s] /opt/homebrew/Caskroom/miniforge/base/envs/ros2_humble/lib/python3.11/site-packages/setuptools/_distutils/dist.py:287: UserWarning: Unknown distribution option: 'tests_require'
+[0.352s]   warnings.warn(msg)
+[0.391s] running egg_info
+[0.396s] creating ../../build/hello_ros2/hello_ros2.egg-info
+[0.397s] writing ../../build/hello_ros2/hello_ros2.egg-info/PKG-INFO
+[0.397s] writing dependency_links to ../../build/hello_ros2/hello_ros2.egg-info/dependency_links.txt
+[0.397s] writing entry points to ../../build/hello_ros2/hello_ros2.egg-info/entry_points.txt
+[0.397s] writing requirements to ../../build/hello_ros2/hello_ros2.egg-info/requires.txt
+[0.397s] writing top-level names to ../../build/hello_ros2/hello_ros2.egg-info/top_level.txt
+[0.397s] writing manifest file '../../build/hello_ros2/hello_ros2.egg-info/SOURCES.txt'
+[0.410s] reading manifest file '../../build/hello_ros2/hello_ros2.egg-info/SOURCES.txt'
+[0.410s] writing manifest file '../../build/hello_ros2/hello_ros2.egg-info/SOURCES.txt'
+[0.410s] running build
+[0.410s] running build_py
+[0.410s] creating /Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/hello_ros2/build/lib/hello_ros2
+[0.411s] copying hello_ros2/talker.py -> /Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/hello_ros2/build/lib/hello_ros2
+[0.411s] copying hello_ros2/__init__.py -> /Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/hello_ros2/build/lib/hello_ros2
+[0.411s] copying hello_ros2/listener.py -> /Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/hello_ros2/build/lib/hello_ros2
+[0.411s] running install
+[0.413s] running install_lib
+[0.419s] creating /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/hello_ros2/lib/python3.11/site-packages/hello_ros2
+[0.419s] copying /Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/hello_ros2/build/lib/hello_ros2/talker.py -> /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/hello_ros2/lib/python3.11/site-packages/hello_ros2
+[0.420s] copying /Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/hello_ros2/build/lib/hello_ros2/__init__.py -> /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/hello_ros2/lib/python3.11/site-packages/hello_ros2
+[0.420s] copying /Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/hello_ros2/build/lib/hello_ros2/listener.py -> /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/hello_ros2/lib/python3.11/site-packages/hello_ros2
+[0.420s] byte-compiling /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/hello_ros2/lib/python3.11/site-packages/hello_ros2/talker.py to talker.cpython-311.pyc
+[0.420s] byte-compiling /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/hello_ros2/lib/python3.11/site-packages/hello_ros2/__init__.py to __init__.cpython-311.pyc
+[0.420s] byte-compiling /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/hello_ros2/lib/python3.11/site-packages/hello_ros2/listener.py to listener.cpython-311.pyc
+[0.421s] running install_data
+[0.421s] creating /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/hello_ros2/share/ament_index/resource_index/packages
+[0.421s] copying resource/hello_ros2 -> /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/hello_ros2/share/ament_index/resource_index/packages
+[0.421s] copying package.xml -> /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/hello_ros2/share/hello_ros2
+[0.421s] running install_egg_info
+[0.429s] Copying ../../build/hello_ros2/hello_ros2.egg-info to /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/hello_ros2/lib/python3.11/site-packages/hello_ros2-0.0.1-py3.11.egg-info
+[0.430s] running install_scripts
+[0.443s] Installing listener script to /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/hello_ros2/lib/hello_ros2
+[0.443s] Installing talker script to /Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/hello_ros2/lib/hello_ros2
+[0.443s] writing list of installed files to '/Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/hello_ros2/install.log'
+[0.453s] Invoked command in '/Users/tjdwo0609/Documents/DockerRos/ros2_ws/src/hello_ros2' returned '0': CONDA_PROMPT_MODIFIER=(ros2_humble) PYTHONPATH=/Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/hello_ros2/prefix_override:/opt/homebrew/Caskroom/miniforge/base/envs/ros2_humble/lib/python3.11/site-packages/colcon_core/task/python/colcon_distutils_commands:/Users/tjdwo0609/Documents/DockerRos/ros2_ws/install/hello_ros2/lib/python3.11/site-packages:${PYTHONPATH} SHLVL=2 _=/usr/bin/env /opt/homebrew/Caskroom/miniforge/base/envs/ros2_humble/bin/python3.11 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/hello_ros2 build --build-base /Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/hello_ros2/build install --record /Users/tjdwo0609/Documents/DockerRos/ros2_ws/build/hello_ros2/install.log --single-version-externally-managed install_data
