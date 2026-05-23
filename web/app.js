@@ -21,6 +21,9 @@ import {
   clearDispenseQueue,
   TrailRenderer,
   installBrowserErrorReporter,
+  createCameraControls,
+  installKeyboardPan,
+  createRosJointMirror,
 } from './src/public-api/index.js';
 
 installBrowserErrorReporter();
@@ -353,69 +356,17 @@ btnRemoveRobot.addEventListener('click', () => {
 });
 
 // ── Camera: presets + focus-on-selection with easing ────────────────
-const VIEW_PRESETS = {
-  iso:   { pos: [1.6, 1.6, 1.6],  target: [0, 0.3, 0] },
-  top:   { pos: [0,   3.5, 0.001], target: [0, 0, 0] },
-  front: { pos: [0,   0.6, 2.8],  target: [0, 0.5, 0] },
-  side:  { pos: [2.8, 0.6, 0],    target: [0, 0.5, 0] },
-};
-
-let _camAnim = null; // { startTime, duration, fromCam, toCam, fromTarget, toTarget }
-
-function easeInOutQuad(t) {
-  return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-}
-
-function startCameraMove(toCameraPos, toTargetPos, duration = 450) {
-  _camAnim = {
-    startTime: performance.now(),
-    duration,
-    fromCam: camera.position.clone(),
-    toCam: toCameraPos.clone(),
-    fromTarget: orbit.target.clone(),
-    toTarget: toTargetPos.clone(),
-  };
-}
-
-function stepCameraAnim() {
-  if (!_camAnim) return;
-  const t = Math.min((performance.now() - _camAnim.startTime) / _camAnim.duration, 1);
-  const e = easeInOutQuad(t);
-  camera.position.lerpVectors(_camAnim.fromCam, _camAnim.toCam, e);
-  orbit.target.lerpVectors(_camAnim.fromTarget, _camAnim.toTarget, e);
-  if (t >= 1) _camAnim = null;
-}
-
-function applyPreset(name) {
-  const p = VIEW_PRESETS[name];
-  if (!p) return;
-  startCameraMove(new THREE.Vector3(...p.pos), new THREE.Vector3(...p.target));
-}
-
-function focusOn(object3D) {
-  if (!object3D) return;
-  const box = new THREE.Box3().setFromObject(object3D);
-  if (box.isEmpty()) return;
-  const center = box.getCenter(new THREE.Vector3());
-  const size = box.getSize(new THREE.Vector3()).length();
-  // Keep current view direction, but reframe at a distance proportional to object size.
-  const dir = new THREE.Vector3().subVectors(camera.position, orbit.target);
-  if (dir.lengthSq() < 1e-6) dir.set(1, 1, 1);
-  dir.normalize();
-  const distance = Math.max(size * 1.8, 0.6);
-  const newCamPos = new THREE.Vector3().copy(center).addScaledVector(dir, distance);
-  startCameraMove(newCamPos, center);
-}
+const camControls = createCameraControls({ camera, orbit });
 
 document.querySelectorAll('#panel [data-view]').forEach((btn) => {
-  btn.addEventListener('click', () => applyPreset(btn.dataset.view));
+  btn.addEventListener('click', () => camControls.applyPreset(btn.dataset.view));
 });
 function _currentFocusTarget() {
   return simRegistry.selected?.root ?? getActive()?.urdf ?? null;
 }
 
 document.getElementById('btn-focus').addEventListener('click', () => {
-  focusOn(_currentFocusTarget());
+  camControls.focusOn(_currentFocusTarget());
 });
 
 // F key = focus. Ignore when typing in form fields.
@@ -423,67 +374,13 @@ window.addEventListener('keydown', (ev) => {
   if (ev.key !== 'f' && ev.key !== 'F') return;
   const tag = ev.target.tagName;
   if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
-  focusOn(_currentFocusTarget());
+  camControls.focusOn(_currentFocusTarget());
 });
 
 // ── Arrow-key camera pan (2D / floor plane only) ───────────────────
-// ↑↓←→ (or WASD) slide the camera + orbit target across the horizontal
-// plane only. Vertical lift / zoom is left to the trackpad
-// (OrbitControls scroll/pinch). Shift = 3× speed.
-const _keysHeld = new Set();
-// All keys normalized to lowercase ('arrowleft', 'a', …) so the
-// keydown / keyup / applyKeyboardPan code paths see identical strings.
-const _PAN_KEYS = new Set([
-  'arrowup', 'arrowdown', 'arrowleft', 'arrowright',
-  'w', 'a', 's', 'd',
-]);
-let _shiftHeld = false;
-window.addEventListener('keydown', (ev) => {
-  const tag = ev.target.tagName;
-  if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
-  if (ev.key === 'Shift') _shiftHeld = true;
-  const k = ev.key.toLowerCase();
-  if (_PAN_KEYS.has(k)) {
-    _keysHeld.add(k);
-    ev.preventDefault();
-  }
+const { applyPan } = installKeyboardPan({
+  camera, orbit, isCameraAnimating: camControls.isAnimating,
 });
-window.addEventListener('keyup', (ev) => {
-  if (ev.key === 'Shift') _shiftHeld = false;
-  _keysHeld.delete(ev.key.toLowerCase());
-});
-// Stop sliding if focus leaves the window mid-press (sticky-key bug).
-window.addEventListener('blur', () => { _keysHeld.clear(); _shiftHeld = false; });
-
-const _PAN_WORLD_UP = new THREE.Vector3(0, 1, 0);
-const _panForward = new THREE.Vector3();
-const _panRight   = new THREE.Vector3();
-const _panDelta   = new THREE.Vector3();
-function applyKeyboardPan(dt) {
-  if (_keysHeld.size === 0) return;
-  if (_camAnim) return;     // don't fight an active preset/focus animation
-  const speed = 1.5 * (_shiftHeld ? 3 : 1) * dt; // m/s × dt
-
-  // Camera's look direction projected onto the ground plane gives the
-  // "forward" axis on the floor. If the camera looks straight down (top
-  // preset) the projection collapses — fall back to world -Z.
-  _panForward.subVectors(orbit.target, camera.position);
-  _panForward.y = 0;
-  if (_panForward.lengthSq() < 1e-6) _panForward.set(0, 0, -1);
-  _panForward.normalize();
-  // Right axis = forward × up (always horizontal because forward is).
-  _panRight.crossVectors(_panForward, _PAN_WORLD_UP).normalize();
-
-  _panDelta.set(0, 0, 0);
-  if (_keysHeld.has('arrowleft')  || _keysHeld.has('a')) _panDelta.addScaledVector(_panRight,   -speed);
-  if (_keysHeld.has('arrowright') || _keysHeld.has('d')) _panDelta.addScaledVector(_panRight,    speed);
-  if (_keysHeld.has('arrowup')    || _keysHeld.has('w')) _panDelta.addScaledVector(_panForward,  speed);
-  if (_keysHeld.has('arrowdown')  || _keysHeld.has('s')) _panDelta.addScaledVector(_panForward, -speed);
-  if (_panDelta.lengthSq() > 0) {
-    camera.position.add(_panDelta);
-    orbit.target.add(_panDelta);
-  }
-}
 
 // Double-click on canvas = focus on whatever was hit (sim object or robot).
 renderer.domElement.addEventListener('dblclick', (ev) => {
@@ -502,30 +399,16 @@ renderer.domElement.addEventListener('dblclick', (ev) => {
   while (node && !node.userData.simObject && !node.userData.robotInstance) {
     node = node.parent;
   }
-  focusOn(node ?? hits[0].object);
+  camControls.focusOn(node ?? hits[0].object);
 });
 
 // ── ROS2 live sync (rosbridge) ───────────────────────────────────────
+// Joint-mirror policy (per-robot vs shared, freshness gating) lives in
+// src/app/rosJointMirror.js. This block owns just the rosbridge socket
+// + DOM status binding.
 let ros = null;
 let jointSubs = [];
-
-// Phase 3: live-mirror priority. _mirrorActive[cid] = last time (ms) a real
-// /<cid>/joint_states frame drove that arm. While fresh, the taught scenario
-// for that class is skipped so it doesn't fight the live joints. This only
-// gates *playing* the scenario — the taught/captured data is never modified.
-const _mirrorActive = {};
-const MIRROR_FRESH_MS = 1500;
-function _anyMirrorActive() {
-  const now = Date.now();
-  return Object.values(_mirrorActive).some((t) => now - t < MIRROR_FRESH_MS);
-}
-function _applyJointState(robot, msg) {
-  for (let i = 0; i < msg.name.length; i++) {
-    if (robot.urdf.joints[msg.name[i]]) {
-      robot.setJointValue(msg.name[i], msg.position[i]);
-    }
-  }
-}
+const rosMirror = createRosJointMirror({ robotManager });
 
 btnRosConnect.addEventListener('click', () => {
   const url = 'ws://localhost:9090';
@@ -541,39 +424,21 @@ btnRosConnect.addEventListener('click', () => {
     btnRosDisconnect.disabled = false;
 
     // Per-robot topics: /<cid>/joint_states drives exactly the arm tagged
-    // with that cid (set by loadFactoryScenario). This is the real-line
-    // mirror — independent r1/r2/r3.
+    // with that cid (set by loadFactoryScenario).
     for (const cid of ['r1', 'r2', 'r3']) {
       const sub = new ROSLIB.Topic({
         ros, name: `/${cid}/joint_states`,
         messageType: 'sensor_msgs/msg/JointState',
       });
-      sub.subscribe((msg) => {
-        const target = robotManager.getAll()
-          .find((r) => r.urdf.userData && r.urdf.userData.cid === cid);
-        if (!target) return;
-        _applyJointState(target, msg);
-        _mirrorActive[cid] = Date.now();
-      });
+      sub.subscribe((msg) => rosMirror.handleTaggedFrame(cid, msg));
       jointSubs.push(sub);
     }
 
     // Shared /joint_states: back-compat for single-robot / untagged scenes.
-    // Skips arms already driven by a fresh per-robot stream so the two
-    // never fight.
     const sharedSub = new ROSLIB.Topic({
       ros, name: '/joint_states', messageType: 'sensor_msgs/msg/JointState',
     });
-    sharedSub.subscribe((msg) => {
-      for (const r of robotManager.getAll()) {
-        const cid = r.urdf.userData && r.urdf.userData.cid;
-        // cid 태그된 라인 로봇(r1/r2/r3)은 per-robot 토픽만 따른다.
-        // shared /joint_states 를 같이 적용하면 로봇이 멈춘 직후 per-robot
-        // 스트림이 잠깐 끊길 때 shared 가 끼어들어 포즈가 튄다 → 무시.
-        if (cid) continue;
-        _applyJointState(r, msg);
-      }
-    });
+    sharedSub.subscribe((msg) => rosMirror.handleSharedFrame(msg));
     jointSubs.push(sharedSub);
   });
 
@@ -941,8 +806,8 @@ const clock = new THREE.Clock();
 (function animate() {
   requestAnimationFrame(animate);
   const dt = Math.min(clock.getDelta(), 0.1);
-  stepCameraAnim();
-  applyKeyboardPan(dt);
+  camControls.stepAnim();
+  applyPan(dt);
   orbit.update();
   if (mode === 'ik' && getActive()) solveIK();
   simRegistry.updateAll(dt);
