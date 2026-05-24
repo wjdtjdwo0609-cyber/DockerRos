@@ -14,7 +14,7 @@ setup(
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='tjdwo0609',
-    maintainer_email='wjdtjdwo0609@gmail.com',
+    maintainer_email='244419461+wjdtjdwo0609-cyber@users.noreply.github.com',
     description='Minimal pub/sub template package',
     license='MIT',
     tests_require=['pytest'],

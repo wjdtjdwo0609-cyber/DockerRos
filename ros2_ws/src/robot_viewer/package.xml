@@ -3,7 +3,7 @@
   <name>robot_viewer</name>
   <version>0.0.1</version>
   <description>Generic URDF viewer (RViz + joint sliders)</description>
-  <maintainer email="wjdtjdwo0609@gmail.com">tjdwo0609</maintainer>
+  <maintainer email="244419461+wjdtjdwo0609-cyber@users.noreply.github.com">tjdwo0609</maintainer>
   <license>MIT</license>
 
   <exec_depend>robot_state_publisher</exec_depend>
