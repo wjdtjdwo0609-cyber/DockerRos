@@ -1,2 +1,0 @@
-# Hashes of file build rules.
-7a5da73f5b599588f3715ae410d6932e CMakeFiles/indy_description_uninstall
